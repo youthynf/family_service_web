@@ -130,6 +130,7 @@
 
 <script>
 import { oneStep } from '@/api/login'
+import { selectCompany } from '@/api/estate'
 
 export default {
     name: 'Step1',
@@ -163,8 +164,17 @@ export default {
         }
     },
     created() {
-        var arr = ['海淀子公司', '海淀子公司', '海淀子公司3', '海淀子公司99']
-        this.select = arr
+        // var arr = ['海淀子公司', '海淀子公司', '海淀子公司3', '海淀子公司99']
+        // this.select = arr
+        selectCompany().then(res => {
+          this.select = res.result
+        }).catch(err => {
+          this.$notification['error']({
+              message: '错误',
+              description: ((err.response || {}).data || {}).message || '获取公司信息失败',
+              duration: 4
+          })
+        })
     },
     methods: {
         nextStep() {
