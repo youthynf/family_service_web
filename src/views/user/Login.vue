@@ -196,7 +196,7 @@ export default {
                     loginParams[!state.loginType ? 'email' : 'username'] = values.username
                     loginParams.password = md5(values.password)
                     console.log(loginParams, 'loginParams')
-                    //设置参数的类型788
+                    // 设置参数的类型788
                     const params = QS.stringify(loginParams)
                     Login(params)
                         .then(res => this.loginSuccess(res))
