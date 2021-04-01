@@ -6,3 +6,11 @@ export function selectCompany() {
         method: 'get'
     })
 }
+
+export function insertEstate(params) {
+    return axios({
+        url: '/estate/insertEstate',
+        method: 'post',
+        data: params
+    })
+}

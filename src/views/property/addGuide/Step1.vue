@@ -6,12 +6,12 @@
           <a-form-model-item
             label="所属公司"
             :labelCol="labelCol"
-            prop="affiliates"
+            prop="company"
             :wrapperCol="wrapperCol"
           >
-            <a-select v-model="form.affiliates">
+            <a-select v-model="form.company">
               <a-select-option
-                :value="index"
+                :value="item"
                 v-for="(item, index) in select"
                 :key="index"
               >{{ item }}</a-select-option>
@@ -25,44 +25,44 @@
             label="住宅编码"
             :labelCol="labelCol"
             :wrapperCol="wrapperCol"
-            prop="code"
-            ref="code"
+            prop="estateCode"
+            ref="estateCode"
           >
-            <a-input v-model="form.code" @blur="() => {$refs.code.onFieldBlur()}" />
+            <a-input v-model="form.estateCode" @blur="() => {$refs.estateCode.onFieldBlur()}" />
           </a-form-model-item>
         </a-col>
         <a-col :span="12">
           <a-form-model-item
             label="住宅名称"
-            prop="housename"
+            prop="estateName"
             :labelCol="labelCol"
             :wrapperCol="wrapperCol"
           >
-            <a-input v-model="form.housename" />
+            <a-input v-model="form.estateName" />
           </a-form-model-item>
         </a-col>
       </a-row>
       <a-row>
         <a-col :span="12">
-          <a-form-model-item label="占地面积(平房米)" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input />
+          <a-form-model-item label="占地面积(平房米)" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="coverArea">
+            <a-input v-model="form.coverArea" />
           </a-form-model-item>
         </a-col>
         <a-col :span="12">
           <a-form-model-item label="建筑面积(平房米)" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input />
+            <a-input v-model="form.buildArea" />
           </a-form-model-item>
         </a-col>
       </a-row>
       <a-row>
         <a-col :span="12">
           <a-form-model-item label="绿地面积(平房米)" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input />
+            <a-input v-model="form.greenArea" />
           </a-form-model-item>
         </a-col>
         <a-col :span="12">
           <a-form-model-item label="道路面积(平房米)" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input />
+            <a-input v-model="form.roadArea" />
           </a-form-model-item>
         </a-col>
       </a-row>
@@ -71,21 +71,21 @@
           <a-form-model-item
             label="楼宇数量"
             :labelCol="labelCol"
-            prop="housecount"
+            prop="buildingNumber"
             :wrapperCol="wrapperCol"
           >
-            <a-input v-model.number="form.housecount" />
+            <a-input v-model.number="form.buildingNumber" />
           </a-form-model-item>
         </a-col>
         <a-col :span="12">
           <a-form-model-item label="负责人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input />
+            <a-input v-model.number="form.buildingLeader" />
           </a-form-model-item>
         </a-col>
       </a-row>
       <a-row>
         <a-form-model-item label="住宅地址" :labelCol="{span: 3}" :wrapperCol="{span: 20}">
-          <a-input />
+          <a-input v-model.number="form.estateAddr" />
         </a-form-model-item>
       </a-row>
       <a-row>
@@ -94,30 +94,30 @@
       <a-row>
         <a-col :span="12">
           <a-form-model-item label="公司名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input />
+            <a-input v-model.number="form.companyName" />
           </a-form-model-item>
         </a-col>
         <a-col :span="12">
           <a-form-model-item label="法人代表" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input />
+            <a-input v-model.number="form.companyBehalf"/>
           </a-form-model-item>
         </a-col>
       </a-row>
       <a-row>
         <a-col :span="12">
           <a-form-model-item label="联系人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input />
+            <a-input v-model.number="form.contact" />
           </a-form-model-item>
         </a-col>
         <a-col :span="12">
           <a-form-model-item label="联系电话" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input />
+            <a-input v-model.number="form.contactPhone" />
           </a-form-model-item>
         </a-col>
       </a-row>
       <a-row>
         <a-form-model-item label="备注" :labelCol="{span: 3}" :wrapperCol="{span: 20}">
-          <a-input />
+          <a-input v-model.number="form.remark" />
         </a-form-model-item>
       </a-row>
       <a-form-model-item :wrapperCol="{span: 19, offset: 5}">
@@ -129,8 +129,9 @@
 </template>
 
 <script>
-import { oneStep } from '@/api/login'
-import { selectCompany } from '@/api/estate'
+// import { oneStep } from '@/api/login'
+import { selectCompany, insertEstate } from '@/api/estate'
+const QS = require('qs')
 
 export default {
     name: 'Step1',
@@ -140,19 +141,19 @@ export default {
             labelCol: { lg: { span: 6 }, sm: { span: 4 } },
             wrapperCol: { lg: { span: 16 }, sm: { span: 20 } },
             form: {
-                code: '',
-                affiliates: [],
-                housename: '',
-                housecount: ''
+                estateCode: '',
+                companyName: '',
+                estateName: '',
+                buildingNumber: ''
             },
             rules: {
-                code: [
+                estateCode: [
                     { required: true, message: '住宅编码必须填写', trigger: 'blur' }
                     // { min: 3, max: 5, message: 'Length should be 3 to 5', trigger: 'blur' }
                 ],
-                affiliates: [{ required: true, message: '所属公司必须填写', trigger: 'change' }],
-                housename: [{ required: true, message: '楼宇名称必须填写', trigger: 'blur' }],
-                housecount: [
+                company: [{ required: true, message: '所属公司必须填写', trigger: 'change' }],
+                estateName: [{ required: true, message: '楼宇名称必须填写', trigger: 'blur' }],
+                buildingNumber: [
                     {
                         required: true,
                         message: '楼宇数量必须填写',
@@ -178,25 +179,40 @@ export default {
     },
     methods: {
         nextStep() {
-            oneStep({ a: 9 })
-            // this.$refs.ruleForm.validate(valid => {
-            //     if (valid) {
-            //         alert('submit!')
-            //         const random = Math.random()
-            //         if (random > 0.5) {
-            //             // this.$emit('nextStep')
-            //         } else {
-            //             this.$notification.error({
-            //                 message: 'error',
-            //                 description: '123',
-            //                 duration: 1
-            //             })
-            //         }
-            //     } else {
-            //         console.log('error submit!!')
-            //         return false
-            //     }
-            // })
+            this.$refs.ruleForm.validate(valid => {
+                if (valid) {
+                  const data = QS.stringify(this.form)
+                  insertEstate(data).then(res => {
+                    console.log(res)
+                    if (res.result === '1') {
+                        this.$notification.success({
+                            message: '恭喜你',
+                            description: res.message
+                        })
+                        this.$store.commit('SET_TITLE', {
+                            buildingNumber: this.form.buildingNumber,
+                            estateCode: this.form.estateCode
+                        })
+                        this.$emit('nextStep')
+                    } else {
+                        this.$notification.error({
+                            message: '抱歉',
+                            description: res.message
+                        })
+                    }
+                  }).catch(err => {
+                    this.$notification.error({
+                        message: err.result,
+                        description: ((err.response || {}).data || {}).message || '插入房产信息失败',
+                        duration: 1
+                    })
+                  })
+                  // this.$emit('nextStep')
+                } else {
+                    console.log('error submit!!')
+                    return false
+                }
+            })
         },
         resetForm() {
             this.$refs.ruleForm.resetFields()
