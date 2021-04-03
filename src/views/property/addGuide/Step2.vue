@@ -1,13 +1,12 @@
 <template>
   <div>
-    <span style="color: blue;font-weight: 700;">{{ this.$store.state.oneStep.buildingNumber }}</span>
     <!-- <a-form-model ref="ruleForm" :model="form2" :label-col="labelCol" :wrapper-col="wrapperCol"> -->
     <a-row class="header">
       楼宇数量:
-      <span style="color: blue;font-weight: 700;">12</span>
+      <span style="color: blue;font-weight: 700;">{{ this.$store.state.oneStep.buildingNumber }}</span>
       单元数量:
       <!-- <a-form-model-item label="单元数量：" prop="region" class="units" :labelCol="labelCol" :wrapperCol="wrapperCol"> -->
-      <a-select v-model="form2.region">
+      <a-select v-model="form2.region" @change="change()">
         <a-select-option value="1">1</a-select-option>
         <a-select-option value="2">2</a-select-option>
       </a-select>
@@ -17,15 +16,16 @@
       <a-table :columns="columns" :dataSource="data" bordered align="center">
         <template
           v-for="col in [
-            'housecount',
-            'housename',
-            'unitcount',
-            'cappeddate',
-            'completeddate',
-            'presalelicense',
-            'buildingpermit',
-            'constructionarea',
-            'usagearea',
+            'buildingCode',
+            'buildingName',
+            'unitCount',
+            'overRoofDate',
+            'finishDate',
+            'salePermissionId',
+            'buildPermissionId',
+            'buildArea',
+            'usedArea',
+            'unitCount',
             'remark'
           ]"
           :slot="col"
@@ -64,70 +64,72 @@
 </template>
 
 <script>
-import moment from 'moment'
+// import moment from 'moment'
+import { selectBuilding, updateBuildings } from '@/api/estate'
+const QS = require('qs')
 const columns = [
     {
         align: 'center',
         title: '楼宇编码',
-        dataIndex: 'housecount',
+        dataIndex: 'buildingCode',
         width: '6%',
-        scopedSlots: { customRender: 'housecount' }
+        scopedSlots: { customRender: 'buildingCode' }
     },
     {
         align: 'center',
         title: '楼宇名称',
-        dataIndex: 'housename',
+        dataIndex: 'buildingName',
         width: '15%',
-        scopedSlots: { customRender: 'housename' }
+        scopedSlots: { customRender: 'buildingName' }
     },
     {
         align: 'center',
         title: '单元数量',
-        dataIndex: 'unitcount',
+        dataIndex: 'unitCount',
         width: '6%',
-        scopedSlots: { customRender: 'unitcount' }
+        scopedSlots: { customRender: 'unitCount' }
     },
     {
         align: 'center',
         title: '封顶日期',
-        dataIndex: 'cappeddate',
+        dataIndex: 'overRoofDate',
         width: '7%',
-        scopedSlots: { customRender: 'cappeddate' }
+        scopedSlots: { customRender: 'overRoofDate' }
     },
     {
         align: 'center',
         title: '竣工日期',
-        dataIndex: 'completeddate',
+        dataIndex: 'finishDate',
         width: '7%',
-        scopedSlots: { customRender: 'completeddate' }
+        scopedSlots: { customRender: 'finishDate' }
     },
     {
         align: 'center',
         title: '预售许可证',
-        dataIndex: 'presalelicense',
+        dataIndex: 'salePermissionId',
         width: '7%',
-        scopedSlots: { customRender: 'presalelicense' }
+        scopedSlots: { customRender: 'salePermissionId' }
     },
     {
         align: 'center',
         title: '建筑许可证',
-        dataIndex: 'buildingpermit',
+        dataIndex: 'buildPermissionId',
         width: '7%',
-        scopedSlots: { customRender: 'buildingpermit' }
+        scopedSlots: { customRender: 'buildPermissionId' }
     },
     {
         align: 'center',
         title: '建筑面积',
-        dataIndex: 'constructionarea',
+        dataIndex: 'buildArea',
         width: '6%',
-        scopedSlots: { customRender: 'constructionarea' }
+        scopedSlots: { customRender: 'buildArea' }
     },
     {
         align: 'center',
         title: '使用面积',
-        dataIndex: 'usagearea',
+        dataIndex: 'usedArea',
         width: '6%',
-        scopedSlots: { customRender: 'usagearea' }
+        scopedSlots: { customRender: 'usedArea' }
     },
     {
         align: 'center',
@@ -146,21 +148,6 @@ const columns = [
 ]
 
 const data = []
-for (let i = 0; i < 10; i++) {
-    data.push({
-        key: i.toString(),
-        housecount: `B-${i + 1}`,
-        housename: `第${i + 1}栋`,
-        unitcount: `12`,
-        cappeddate: moment().format('YYYY-MM-DD'),
-        completeddate: moment().format('YYYY-MM-DD'),
-        presalelicense: '',
-        buildingpermit: '',
-        constructionarea: '',
-        usagearea: '',
-        remark: ''
-    })
-}
 export default {
     name: 'Step2',
     data() {
@@ -188,9 +175,45 @@ export default {
         }
     },
     created() {
-        console.log(this)
+        const allData = {
+            buildingNumber: this.$store.state.oneStep.buildingNumber,
+            estateCode: this.$store.state.oneStep.estateCode
+        }
+        const params = QS.stringify(allData)
+        selectBuilding(params).then(res => {
+          const result = res.result
+          for (let i = 0; i < result.length; i++) {
+              const building = result[i]
+              data.push({
+                  key: building.id.toString(),
+                  buildingCode: building.buildingCode,
+                  buildingName: building.buildingName,
+                  unitCount: building.unitCount,
+                  overRoofDate: building.overRoofDate,
+                  finishDate: building.finishDate,
+                  salePermissionId: building.salePermissionId,
+                  buildPermissionId: building.buildPermissionId,
+                  buildArea: building.buildArea,
+                  usedArea: building.usedArea,
+                  remark: building.remark
+              })
+          }
+          this.cacheData = data.map(item => ({ ...item }))
+        }).catch(err => {
+          this.$notification['error']({
+              message: '错误',
+              description: ((err.response || {}).data || {}).message || '获取楼宇信息失败',
+              duration: 4
+          })
+        })
     },
     methods: {
+        change() {
+            const unitCount = this.form2.region
+            for (let i = 0; i < this.data.length; i++) {
+                this.data[i].unitCount = unitCount
+            }
+        },
         nextStep() {
             this.$emit('nextStep')
         },
@@ -209,6 +232,8 @@ export default {
             const newData = [...this.data]
             const target = newData.filter(item => key === item.key)[0]
             this.editingKey = key
+            console.log(key)
+            console.log(target)
             if (target) {
                 target.editable = true
                 this.data = newData
@@ -216,7 +241,6 @@ export default {
             }
         },
         save(key) {
-            console.log(key)
             const newData = [...this.data]
             const newCacheData = [...this.cacheData]
             const target = newData.filter(item => key === item.key)[0]
@@ -227,6 +251,15 @@ export default {
                 Object.assign(targetCache, target)
                 this.cacheData = newCacheData
             }
+
+            target.id = key
+            target.estateCode = this.$store.state.oneStep.estateCode
+            const param = QS.stringify(target)
+            updateBuildings(param).then(res => {
+                console.log(res)
+            }).catch(err => {
+                console.log(err)
+            })
         },
         cancel(key) {
             const newData = [...this.data]

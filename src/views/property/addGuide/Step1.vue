@@ -189,11 +189,6 @@ export default {
                             message: '恭喜你',
                             description: res.message
                         })
-                        this.$store.commit('SET_TITLE', {
-                            buildingNumber: this.form.buildingNumber,
-                            estateCode: this.form.estateCode
-                        })
-                        this.$emit('nextStep')
                     } else {
                         this.$notification.error({
                             message: '抱歉',
@@ -207,7 +202,11 @@ export default {
                         duration: 1
                     })
                   })
-                  // this.$emit('nextStep')
+                  this.$store.commit('SET_TITLE', {
+                      buildingNumber: this.form.buildingNumber,
+                      estateCode: this.form.estateCode
+                  })
+                  this.$emit('nextStep')
                 } else {
                     console.log('error submit!!')
                     return false
