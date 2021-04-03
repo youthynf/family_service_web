@@ -215,6 +215,18 @@ export default {
             }
         },
         nextStep() {
+            const dataArray = this.data
+            var param = '['
+            for (let i = 0; i < dataArray.length; i++) {
+                if (i !== dataArray.length - 1) {
+                    param += '{"buildingCode":"' + dataArray[i].buildingCode + '","unitCount": ' + dataArray[i].unitCount + '},'
+                } else {
+                    param += '{"buildingCode":"' + dataArray[i].buildingCode + '","unitCount": ' + dataArray[i].unitCount + '}]'
+                }
+            }
+            this.$store.commit('SET_TITLE', {
+                unitMessage: param
+            })
             this.$emit('nextStep')
         },
         prevStep() {

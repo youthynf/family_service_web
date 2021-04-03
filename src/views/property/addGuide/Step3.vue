@@ -20,13 +20,13 @@
       <a-table :columns="columns" :dataSource="data" bordered align="center">
         <template
           v-for="col in [
-            'housecode',
-            'unitcode',
-            'unitname',
-            'startfloor',
-            'endfloor',
-            'startroomnum',
-            'endroomnum',
+            'buildingCode',
+            'unitCode',
+            'unitName',
+            'startFloor',
+            'endFloor',
+            'startCellId',
+            'stopCellId',
             'remark'
           ]"
           :slot="col"
@@ -65,55 +65,57 @@
 </template>
 
 <script>
+import { selectUnit, updateUnit } from '@/api/estate'
+const QS = require('qs')
 const columns = [
     {
         align: 'center',
         title: '楼宇编码',
-        dataIndex: 'housecode',
+        dataIndex: 'buildingCode',
         width: '6%',
-        scopedSlots: { customRender: 'housecode' }
+        scopedSlots: { customRender: 'buildingCode' }
     },
     {
         align: 'center',
         title: '单元编码',
-        dataIndex: 'unitcode',
+        dataIndex: 'unitCode',
         width: '6%',
-        scopedSlots: { customRender: 'unitcode' }
+        scopedSlots: { customRender: 'unitCode' }
     },
     {
         align: 'center',
         title: '单元名称',
-        dataIndex: 'unitname',
+        dataIndex: 'unitName',
         width: '6%',
-        scopedSlots: { customRender: 'unitname' }
+        scopedSlots: { customRender: 'unitName' }
     },
     {
         align: 'center',
         title: '开始楼层',
-        dataIndex: 'startfloor',
+        dataIndex: 'startFloor',
         width: '7%',
-        scopedSlots: { customRender: 'startfloor' }
+        scopedSlots: { customRender: 'startFloor' }
     },
     {
         align: 'center',
         title: '结束楼层',
-        dataIndex: 'endfloor',
+        dataIndex: 'endFloor',
         width: '7%',
-        scopedSlots: { customRender: 'endfloor' }
+        scopedSlots: { customRender: 'endFloor' }
     },
     {
         align: 'center',
         title: '开始房号',
-        dataIndex: 'startroomnum',
+        dataIndex: 'startCellId',
         width: '7%',
-        scopedSlots: { customRender: 'startroomnum' }
+        scopedSlots: { customRender: 'startCellId' }
     },
     {
         align: 'center',
         title: '结束房号',
-        dataIndex: 'endroomnum',
+        dataIndex: 'stopCellId',
         width: '7%',
-        scopedSlots: { customRender: 'endroomnum' }
+        scopedSlots: { customRender: 'stopCellId' }
     },
     {
         align: 'center',
@@ -132,19 +134,6 @@ const columns = [
 ]
 
 const data = []
-for (let i = 0; i < 10; i++) {
-    data.push({
-        key: i.toString(),
-        housecode: `B-${i + 1}`,
-        unitcode: `U-${i + 1}`,
-        unitname: `${i + 1}单元`,
-        startfloor: 1,
-        endfloor: 8,
-        startroomnum: 1,
-        endroomnum: 2,
-        remark: ''
-    })
-}
 export default {
     name: 'Step3',
     data() {
@@ -165,6 +154,32 @@ export default {
             columns,
             editingKey: ''
         }
+    },
+    created() {
+        selectUnit(this.$store.state.twoStep.unitMessage).then(res => {
+            const result = res.result
+            for (let i = 0; i < result.length; i++) {
+                const unit = result[i]
+                data.push({
+                    key: unit.id.toString(),
+                    buildingCode: unit.buildingCode,
+                    unitCode: unit.unitCode,
+                    unitName: unit.unitName,
+                    startFloor: unit.startFloor,
+                    stopFloor: unit.stopFloor,
+                    startCellId: unit.startCellId,
+                    stopCellId: unit.stopCellId,
+                    remark: unit.remark
+                })
+            }
+            this.cacheData = data.map(item => ({ ...item }))
+        }).catch(err => {
+            this.$notification['error']({
+                message: '错误',
+                description: ((err.response || {}).data || {}).message || '获取单元数据',
+                duration: 4
+            })
+        })
     },
     methods: {
         nextStep() {
@@ -203,6 +218,20 @@ export default {
                 this.cacheData = newCacheData
                 this.editingKey = ''
             }
+            target.id = key
+            const param = QS.stringify(target)
+            updateUnit(param).then(res => {
+                this.$notification.success({
+                    message: '恭喜你',
+                    description: res.result
+                })
+            }).catch(err => {
+                this.$notification.error({
+                    message: 'error',
+                    description: ((err.response || {}).data || {}).message || '添加单元信息失败',
+                    duration: 1
+                })
+            })
         },
         cancel(key) {
             const newData = [...this.data]

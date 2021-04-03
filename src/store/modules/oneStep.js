@@ -1,6 +1,7 @@
 const oneStep = {
     state: {
-        buildingNumber: ''
+        buildingNumber: '',
+        estateCode: ''
     },
     mutations: {
         // 这里只能是同步的
