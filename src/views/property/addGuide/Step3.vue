@@ -215,6 +215,21 @@ export default {
             }
         },
         nextStep() {
+            const dataArray = this.data
+            console.log(dataArray)
+            let param = '['
+            for (let i = 0; i < dataArray.length; i++) {
+                if (i !== dataArray.length - 1) {
+                    param += '{ "unitCode": "' + dataArray[i].unitCode + '", "startFloor": ' + dataArray[i].startFloor + ', "stopFloor": ' + dataArray[i].stopFloor + ', "startCellId": ' + dataArray[i].startCellId + ', "stopCellId": ' + dataArray[i].stopCellId + '},'
+                } else {
+                    param += '{ "unitCode": "' + dataArray[i].unitCode + '", "startFloor": ' + dataArray[i].startFloor + ', "stopFloor": ' + dataArray[i].stopFloor + ', "startCellId": ' + dataArray[i].startCellId + ', "stopCellId": ' + dataArray[i].stopCellId + '}'
+                }
+            }
+            param += ']'
+            this.$store.commit('SET_TITLE', {
+                cellMessage: param,
+                estateCode: this.$store.state.twoStep.estateCode
+            })
             this.$emit('nextStep')
         },
         prevStep() {
@@ -243,6 +258,7 @@ export default {
             const newCacheData = [...this.cacheData]
             const target = newData.filter(item => key === item.key)[0]
             const targetCache = newCacheData.filter(item => key === item.key)[0]
+            console.log(target)
             if (target && targetCache) {
                 delete target.editable
                 this.data = newData
@@ -255,7 +271,7 @@ export default {
             updateUnit(param).then(res => {
                 this.$notification.success({
                     message: '恭喜你',
-                    description: res.result
+                    description: res.message
                 })
             }).catch(err => {
                 this.$notification.error({

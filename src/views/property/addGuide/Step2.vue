@@ -225,7 +225,8 @@ export default {
                 }
             }
             this.$store.commit('SET_TITLE', {
-                unitMessage: param
+                unitMessage: param,
+                estateCode: this.$store.state.oneStep.estateCode
             })
             this.$emit('nextStep')
         },

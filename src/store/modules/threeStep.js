@@ -1,20 +1,20 @@
-const twoStep = {
+const threeStep = {
     state: {
-        unitMessage: [],
+        cellMessage: [],
         estateCode: ''
     },
     mutations: {
         SET_TITLE(state, payload) {
             console.log(payload)
-            state.unitMessage = payload.unitMessage
+            state.cellMessage = payload.cellMessage
             state.estateCode = payload.estateCode
         }
     },
     actions: {
 
     },
-    getters: {
+    getter: {
 
     }
 }
-export default twoStep
+export default threeStep
