@@ -3,16 +3,28 @@
     <!-- <a-form-model ref="ruleForm" :model="form2" :label-col="labelCol" :wrapper-col="wrapperCol"> -->
     <a-row class="header">
       楼层数量:
-      <a-input style="width: 30px;padding: 0;text-align: center;"></a-input>开始房号:
+      <a-input style="width: 30px;padding: 0;text-align: center;" @blur="changeFloor()" v-model="form2.floorNumber"></a-input>开始房号:
       <!-- <a-form-model-item label="单元数量：" prop="region" class="units" :labelCol="labelCol" :wrapperCol="wrapperCol"> -->
-      <a-select v-model="form2.region">
+      <a-select style="width: 50px;padding: 0;text-align: center;" v-model="form2.startCell" @change="changeStartCell()">
         <a-select-option value="1">1</a-select-option>
         <a-select-option value="2">2</a-select-option>
+        <a-select-option value="3">3</a-select-option>
+        <a-select-option value="4">4</a-select-option>
+        <a-select-option value="5">5</a-select-option>
+        <a-select-option value="6">6</a-select-option>
+        <a-select-option value="7">7</a-select-option>
+        <a-select-option value="8">8</a-select-option>
       </a-select>结束房号:
       <!-- <a-form-model-item label="单元数量：" prop="region" class="units" :labelCol="labelCol" :wrapperCol="wrapperCol"> -->
-      <a-select v-model="form2.region">
+      <a-select style="width: 50px;padding: 0;text-align: center;" v-model="form2.stopCell" @change="changeStopCell()">
         <a-select-option value="1">1</a-select-option>
         <a-select-option value="2">2</a-select-option>
+        <a-select-option value="3">3</a-select-option>
+        <a-select-option value="4">4</a-select-option>
+        <a-select-option value="5">5</a-select-option>
+        <a-select-option value="6">6</a-select-option>
+        <a-select-option value="7">7</a-select-option>
+        <a-select-option value="8">8</a-select-option>
       </a-select>
       <!-- </a-form-model-item> -->
     </a-row>
@@ -24,7 +36,7 @@
             'unitCode',
             'unitName',
             'startFloor',
-            'endFloor',
+            'stopFloor',
             'startCellId',
             'stopCellId',
             'remark'
@@ -99,9 +111,9 @@ const columns = [
     {
         align: 'center',
         title: '结束楼层',
-        dataIndex: 'endFloor',
+        dataIndex: 'stopFloor',
         width: '7%',
-        scopedSlots: { customRender: 'endFloor' }
+        scopedSlots: { customRender: 'stopFloor' }
     },
     {
         align: 'center',
@@ -182,6 +194,26 @@ export default {
         })
     },
     methods: {
+        changeFloor() {
+            const floorNumber = this.form2.floorNumber
+            console.log(this.data)
+            for (let i = 0; i < this.data.length; i++) {
+                this.data[i].startFloor = 1
+                this.data[i].stopFloor = floorNumber
+            }
+        },
+        changeStartCell() {
+            const startCell = this.form2.startCell
+            for (let i = 0; i < this.data.length; i++) {
+                this.data[i].startCellId = startCell
+            }
+        },
+        changeStopCell() {
+            const stopCell = this.form2.stopCell
+            for (let i = 0; i < this.data.length; i++) {
+                this.data[i].stopCellId = stopCell
+            }
+        },
         nextStep() {
             this.$emit('nextStep')
         },
